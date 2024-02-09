@@ -1,15 +1,17 @@
-POST http://localhost:3000/polls
+
+
+
+PUT http://localhost:3000/polls/c5bb12de-0fa3-4def-8ac1-6c9c0416d38b
 content-type: application/json
 
 {
-  "title": "Teste hehe",
+  "title": "Teste UPDATE",
   "options": [
     {
-      "title": "Opção 1"
+      "title": "[] Opção 2"
     },
     {
-      "title": "Opção 2"
+      "title": "[] Opção 3"
     }
   ]
 }
-

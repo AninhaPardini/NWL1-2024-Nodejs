@@ -19,5 +19,4 @@ Foi explicado sobre as configurações iníciais, docker-compose, prisma e seus 
 
 Organizei os arquivos e gostei da forma como o Diego passou mas gostaria de fazer minha primeira ousadia de aplicar os meus estudos de POO de classes que fiz em autodidata e com o vídeo que vi sobre Encapsulamento do Dechamps.
 
-
-
+Nesta aula foi passado o CRUD da aplicação e eu optei por cria-lo em um controller do poll que é repassado para as rotas que irão ser configuradas no meu ``server.ts``.
