@@ -1,16 +1,16 @@
 import fastify from "fastify";
 import Routes from "./routes/routes";
-import PollController from "./routes/controllers/pollController";
-import VotesController from "./routes/controllers/votesController";
+import PollController from "./controllers/pollController";
+import VotesController from "./controllers/votesController";
 import CookieConfig from "./cookie/cookieConfig";
-
 
 const app = fastify();
 const cookie = new CookieConfig(app);
 cookie.configureCookie();
+cookie.createCookie();
 
 const pollController = new PollController();
-const votesController = new VotesController();
+const votesController = new VotesController(app);
 
 const routes = new Routes(app, pollController, votesController);
 routes.configureRoutes();

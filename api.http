@@ -1,17 +1,7 @@
 
-
-
-PUT http://localhost:3000/polls/c5bb12de-0fa3-4def-8ac1-6c9c0416d38b
-content-type: application/json
+POST http://localhost:3000/polls/80b6a3e1-d2f2-4362-aebf-9b25e72a873d/votes
+Content-Type: application/json
 
 {
-  "title": "Teste UPDATE",
-  "options": [
-    {
-      "title": "[] Opção 2"
-    },
-    {
-      "title": "[] Opção 3"
-    }
-  ]
+  "pollOptionId": "dd5240e2-c514-46bc-a66d-9c1e715a11b1"
 }

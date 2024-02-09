@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import z, { optional } from "zod";
-import { prisma } from "../../../lib/prisma";
+import { prisma } from "../../lib/prisma";
 
 export default class PollController {
   protected pollCreateBody = z.object({

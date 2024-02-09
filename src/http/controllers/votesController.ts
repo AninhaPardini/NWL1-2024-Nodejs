@@ -1,7 +1,8 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest, FastifyInstance } from "fastify";
 import z, { optional } from "zod";
+import CookieConfig from "../cookie/cookieConfig";
 
-export default class VotesController {
+export default class VotesController extends CookieConfig {
   protected voteBody = z.object({
     pollOptionId: z.string().uuid(),
   });
@@ -15,15 +16,10 @@ export default class VotesController {
 
     const { pollOptionId } = this.voteBody.parse(request.body);
     const { pollId } = this.voteOnPollParams.parse(request.params);
+    const { sessionId } =  request.cookies;
 
-    try {
+    return reply.status(201).send({ sessionId });
 
-
-      return reply.status(201).send( sessionId );
-    } catch (error) {
-      console.log(error);
-      // return reply.status;
-    }
   }
 
   async getVotes(request: FastifyRequest, reply: FastifyReply) {
@@ -32,7 +28,8 @@ export default class VotesController {
     return reply.send();
   }
 
-  constructor() {
+  constructor(fastify: FastifyInstance) {
+    super(fastify);
     this.vote = this.vote.bind(this);
     this.getVotes = this.getVotes.bind(this);
     // this.delete = this.delete.bind(this);

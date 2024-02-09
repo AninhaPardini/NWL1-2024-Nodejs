@@ -3,9 +3,8 @@ import { randomUUID } from 'crypto';
 import { FastifyInstance } from 'fastify';
 
 export default class CookieConfig {
-  constructor(private fastify: FastifyInstance) {}
 
-  async configureCookie() {
+  public async configureCookie() {
     this.fastify.register(cookie, {
       secret: 'aksjdwd-amddds-eji3u99',
       hook: 'onRequest',
@@ -14,7 +13,7 @@ export default class CookieConfig {
 
   }
 
-  async createCookie() {
+  public async createCookie() {
     this.fastify.addHook('onRequest', async (request, reply) => {
       let { sessionId } = request.cookies;
 
@@ -31,6 +30,12 @@ export default class CookieConfig {
 
         console.log('🍪 [COOKIE] COOKIE CRIADO');
       }
+      
     });
+  }
+
+  constructor(private fastify: FastifyInstance) {
+    this.configureCookie = this.configureCookie.bind(this);
+    this.createCookie = this.createCookie.bind(this);
   }
 }
