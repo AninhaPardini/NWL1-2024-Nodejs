@@ -1,7 +1,15 @@
-POST http://localhost:3000/polls HTTP/1.1
+POST http://localhost:3000/polls
 content-type: application/json
 
 {
-  "post": "Teste hehe"
+  "title": "Teste hehe",
+  "options": [
+    {
+      "title": "Opção 1"
+    },
+    {
+      "title": "Opção 2"
+    }
+  ]
 }
 
