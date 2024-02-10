@@ -1,8 +1,10 @@
 import { FastifyReply, FastifyRequest, FastifyInstance } from "fastify";
 import z, { optional } from "zod";
+import { prisma } from "../../lib/prisma";
 import CookieConfig from "../cookie/cookieConfig";
+import VotesValidator from "../validators/votes.validator";
 
-export default class VotesController extends CookieConfig {
+export default class VotesController extends CookieConfig implements VotesValidator {
   protected voteBody = z.object({
     pollOptionId: z.string().uuid(),
   });
@@ -18,8 +20,20 @@ export default class VotesController extends CookieConfig {
     const { pollId } = this.voteOnPollParams.parse(request.params);
     const { sessionId } =  request.cookies;
 
-    return reply.status(201).send({ sessionId });
+    if (!sessionId) {
+      return;
+    }
 
+    await prisma.vote.create({
+      data: {
+        pollOptionId,
+        pollId,
+        sessionId,
+      },
+    });
+
+    return reply.status(201).send({ sessionId });
+    
   }
 
   async getVotes(request: FastifyRequest, reply: FastifyReply) {
