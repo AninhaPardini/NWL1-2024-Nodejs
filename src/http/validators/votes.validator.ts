@@ -2,8 +2,11 @@ import z from "zod";
 import { prisma } from "../../lib/prisma";
 import { FastifyReply } from "fastify";
 import { redis, redisDeleteCounter } from "../../lib/redis";
+import { WebsocketController } from "../controllers/websocketController";
 
 export default class VotesValidator {
+  public websocketController: WebsocketController;
+
   protected voteBody = z.object({
     pollOptionId: z.string().uuid(),
   });
@@ -29,7 +32,12 @@ export default class VotesValidator {
         },
       });
 
-      redisDeleteCounter(pollId, userPreviousVote.pollOptionId);
+      const votes = await redisDeleteCounter(pollId, userPreviousVote.pollOptionId);
+
+      this.websocketController.publish(pollId, {
+        pollOptionId: userPreviousVote.pollOptionId,
+        votes: Number(votes),
+      });
 
     } else if (userPreviousVote && userPreviousVote.pollOptionId === pollOptionId) {
       return reply.status(400).send({ message: "Você já votou nessa enquete" });

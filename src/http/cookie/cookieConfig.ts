@@ -5,9 +5,11 @@ import gradient from 'gradient-string';
 
 export default class CookieConfig {
 
+  private secret = process.env.SECRET_COOKIE;
+
   public async configureCookie() {
     this.fastify.register(cookie, {
-      secret: 'aksjdwd-amddds-eji3u99',
+      secret: this.secret,
       hook: 'onRequest',
       parseOptions: {},
     });

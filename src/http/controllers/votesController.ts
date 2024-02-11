@@ -1,10 +1,12 @@
-import { FastifyReply, FastifyRequest, FastifyInstance } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import { prisma } from "../../lib/prisma";
 import VotesValidator from "../validators/votes.validator";
 import gradient from "gradient-string";
 import redisAddCounter, { redis } from "../../lib/redis";
+import { WebsocketController } from "./websocketController";
 
 export default class VotesController extends VotesValidator {
+  public websocketController: WebsocketController;
 
   async vote(request: FastifyRequest, reply: FastifyReply) {
     console.log(`-> ${gradient.cristal('🧠 [ VOTES CONTROLER ] VOTANDO')}`);
@@ -27,8 +29,13 @@ export default class VotesController extends VotesValidator {
       },
     });
 
-    await redisAddCounter(pollId, pollOptionId);
-    
+    const votes = await redisAddCounter(pollId, pollOptionId);
+
+    this.websocketController.publish(pollId, {
+      pollOptionId,
+      votes: Number(votes),
+    });
+
     return reply.status(201).send(`Você votou na opção ${pollOptionId}`);
     
   }
@@ -39,9 +46,10 @@ export default class VotesController extends VotesValidator {
   //   return reply.send();
   // }
 
-  constructor() {
+  constructor(websocketController: WebsocketController) {
     super();
     this.vote = this.vote.bind(this);
+    this.websocketController = websocketController;
     // this.getVotes = this.getVotes.bind(this);
     // this.delete = this.delete.bind(this);
   }
