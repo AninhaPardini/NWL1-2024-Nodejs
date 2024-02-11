@@ -1,36 +1,15 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import z, { optional } from "zod";
 import { prisma } from "../../lib/prisma";
+import gradient from "gradient-string";
+import PollValidator from "../validators/poll.validator";
+import { redisGetAllCounters } from "../../lib/redis";
 
-export default class PollController {
-  protected pollCreateBody = z.object({
-    title: z.string(),
-    options: z.array(
-      z.object({
-        title: z.string(),
-        value: z.optional(z.string()),
-        votes: z.optional(z.number()),
-      })
-    ),
-  });
-
-  protected getPollParams = z.object({
-    pollId: z.string().uuid(),
-  });
-
-  protected updatePoll = z.object({
-    id: z.string().uuid(),
-    title: z.string(),
-    options: z.array(
-      z.object({
-        title: z.string(),
-      })
-    ),
-  });
-
+export default class PollController extends PollValidator {
   async create(request: FastifyRequest, reply: FastifyReply) {
-    console.log("🚏 [POLL CONTROLER] CRIANDO A ENQUETE");
-    console.log(request.body);
+    console.log(
+      `-> ${gradient.cristal("🧠 [POLL CONTROLER] CRIANDO A ENQUETE")}`
+    );
 
     const { title, options } = this.pollCreateBody.parse(request.body);
     try {
@@ -57,7 +36,9 @@ export default class PollController {
   }
 
   async get(request: FastifyRequest, reply: FastifyReply) {
-    console.log("🚏 [POLL CONTROLER] PEGANDO A ENQUETE");
+    console.log(
+      `-> ${gradient.cristal("🧠 [POLL CONTROLER] PEGANDO A ENQUETE")}`
+    );
 
     const { pollId } = this.getPollParams.parse(request.params);
 
@@ -66,15 +47,42 @@ export default class PollController {
         id: pollId,
       },
       include: {
-        options: true,
+        options: {
+          select: {
+            id: true,
+            title: true,
+          },
+        },
       },
     });
 
-    return reply.send({ poll });
+    this.validatePollExists(pollId, reply);
+
+    const votes = await redisGetAllCounters(pollId);
+
+    if (poll && poll.options) {
+      return reply.send({
+        poll: {
+          id: poll.id,
+          title: poll.title,
+          options: poll.options.map((option) => {
+            return {
+              id: option.id,
+              title: option.title,
+              score: option.id in votes ? votes[option.id] : 0,
+            };
+          }),
+        },
+      });
+    } else {
+      return reply.status(400).send({ message: "Enquete não encontrada" });
+    }
   }
 
   async getAll(request: FastifyRequest, reply: FastifyReply) {
-    console.log("🚏 [POLL CONTROLER] PEGANDO TODAS AS ENQUETES");
+    console.log(
+      `-> ${gradient.cristal("🧠 [POLL CONTROLER] PEGANDO TODAS AS ENQUETES")}`
+    );
 
     const polls = await prisma.poll.findMany({
       include: {
@@ -87,13 +95,15 @@ export default class PollController {
       },
     });
 
+    this.pollExists(polls, reply);
+
     return reply.send({ polls });
   }
 
   // async delete(request: FastifyRequest, reply: FastifyReply) {
-  //   console.log("🚏 [POLL CONTROLER] DELETANDO A ENQUETE");
+  // console.log(`-> ${gradient.cristal('🧠 [POLL CONTROLER] DELETANDO A ENQUETE')}`);
 
-  //     const { id } = this.pollBody.parse(request.body);
+  //     const { id } = this.deletePoll.parse(request.body);
 
   //     await prisma.poll.delete({
   //       where: {
@@ -126,13 +136,14 @@ export default class PollController {
   //           },
   //         },
   //       },
-        
+
   //     });
 
   //     return reply.status(200).send(poll);
   // }
 
   constructor() {
+    super();
     this.create = this.create.bind(this);
     this.get = this.get.bind(this);
     // this.delete = this.delete.bind(this);

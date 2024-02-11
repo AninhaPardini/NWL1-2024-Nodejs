@@ -1,20 +1,13 @@
 import { FastifyReply, FastifyRequest, FastifyInstance } from "fastify";
-import z, { optional } from "zod";
 import { prisma } from "../../lib/prisma";
-import CookieConfig from "../cookie/cookieConfig";
 import VotesValidator from "../validators/votes.validator";
+import gradient from "gradient-string";
+import redisAddCounter, { redis } from "../../lib/redis";
 
-export default class VotesController extends CookieConfig implements VotesValidator {
-  protected voteBody = z.object({
-    pollOptionId: z.string().uuid(),
-  });
-
-  protected voteOnPollParams = z.object({
-    pollId: z.string().uuid(),
-  });
+export default class VotesController extends VotesValidator {
 
   async vote(request: FastifyRequest, reply: FastifyReply) {
-    console.log("🚏 [ VOTES CONTROLER ] VOTANDO");
+    console.log(`-> ${gradient.cristal('🧠 [ VOTES CONTROLER ] VOTANDO')}`);
 
     const { pollOptionId } = this.voteBody.parse(request.body);
     const { pollId } = this.voteOnPollParams.parse(request.params);
@@ -24,6 +17,8 @@ export default class VotesController extends CookieConfig implements VotesValida
       return;
     }
 
+    this.isAlreadyVoted(sessionId, pollId, pollOptionId, reply);
+
     await prisma.vote.create({
       data: {
         pollOptionId,
@@ -32,20 +27,22 @@ export default class VotesController extends CookieConfig implements VotesValida
       },
     });
 
-    return reply.status(201).send({ sessionId });
+    await redisAddCounter(pollId, pollOptionId);
+    
+    return reply.status(201).send(`Você votou na opção ${pollOptionId}`);
     
   }
 
-  async getVotes(request: FastifyRequest, reply: FastifyReply) {
-    console.log("🚏 [POLL CONTROLER] PEGANDO A ENQUETE");
+  // async getVotes(request: FastifyRequest, reply: FastifyReply) {
+  //   console.log("🚏 [POLL CONTROLER] PEGANDO A ENQUETE");
 
-    return reply.send();
-  }
+  //   return reply.send();
+  // }
 
-  constructor(fastify: FastifyInstance) {
-    super(fastify);
+  constructor() {
+    super();
     this.vote = this.vote.bind(this);
-    this.getVotes = this.getVotes.bind(this);
+    // this.getVotes = this.getVotes.bind(this);
     // this.delete = this.delete.bind(this);
   }
 

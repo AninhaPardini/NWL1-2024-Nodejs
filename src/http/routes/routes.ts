@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import PollController from "../controllers/pollController";
 import VotesController from "../controllers/votesController";
+import gradient from "gradient-string";
 
 
 export default class Routes {
@@ -14,7 +15,7 @@ export default class Routes {
     // this.fastify.delete('/polls/:id', this.pollController.delete.bind(this.pollController));
 
     this.fastify.post('/polls/:pollId/votes', this.votesController.vote.bind(this.votesController));
-    this.fastify.get('/polls/:pollId/votes', this.votesController.getVotes.bind(this.votesController));
+    // this.fastify.get('/polls/:pollId/votes', this.votesController.getVotes.bind(this.votesController));
 
   }
 

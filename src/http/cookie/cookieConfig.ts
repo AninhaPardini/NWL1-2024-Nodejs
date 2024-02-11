@@ -1,6 +1,7 @@
 import cookie from '@fastify/cookie';
 import { randomUUID } from 'crypto';
 import { FastifyInstance } from 'fastify';
+import gradient from 'gradient-string';
 
 export default class CookieConfig {
 
@@ -15,6 +16,7 @@ export default class CookieConfig {
 
   public async createCookie() {
     this.fastify.addHook('onRequest', async (request, reply) => {
+      
       let { sessionId } = request.cookies;
 
       if (!sessionId) {
@@ -27,8 +29,7 @@ export default class CookieConfig {
           signed: true,
           httpOnly: true,
         });
-
-        console.log('🍪 [COOKIE] COOKIE CRIADO');
+        console.log(`-> ${gradient.cristal('🍪 [COOKIE] COOKIE CRIADO')}`);
       }
       
     });

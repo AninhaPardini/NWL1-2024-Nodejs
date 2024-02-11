@@ -13,7 +13,7 @@ model Poll {
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   options   PollOption[]
-  votes     Vote[]
+  votes     Vote[]       @relation("PollToVote", onDelete: Cascade)
 }
 
 model PollOption {
@@ -34,6 +34,8 @@ model Vote {
 
   poll       Poll       @relation(fields: [pollId], references: [id])
   pollOption PollOption @relation(fields: [pollOptionId], references: [id])
+  Poll       Poll       @relation(fields: [pollId], references: [id])
+  Poll       Poll       @relation(fields: [pollId], references: [id])
 
   @@unique([pollId, sessionId])
 }
