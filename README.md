@@ -1,4 +1,5 @@
-## NWL 2024 - NodeJs
+![Banner ilustrativo NLW](/src/public/banner.png)
+<h1 align="center">Projeto NLW24 - NodeJs</h1>
 
 Este projeto foi baseado no evento da [Rocketseat](https://www.rocketseat.com.br) **NWL Expert** onde é feita uma criação de um sistema de enquetes, na trilha é ensinado todo o passo a passo do backend, desde estrutura de pastas até organização do código para melhor performace, também é apresentado algumas ferramentas(libs - ORM - Conteinizador) recomendadas e como usa-las que são:
 
@@ -24,7 +25,7 @@ Nesta aula foi passado o CRUD da aplicação e eu optei por cria-lo em um contro
 
 ## 📙 3ª Aula
 
-Na última aula trabalhei com [redis](https://redis.io/docs/get-started/document-database/) e foi apresentado como esse banco de dados pode auxiliar em gamificação de aplicativos/APIs.
+Na última aula trabalhei com [redis](https://redis.io/docs/get-started/document-database/) e foi apresentado como esse banco de dados pode auxiliar em gamificação de aplicativos/APIs. Além disso aprendi como integrar o websocket da própia lib do fastify.
 
 ## 💜 Adicionais
 
@@ -36,7 +37,7 @@ Comece configurando o docker-compose com as informações e credenciais dos seus
 
 ``` docker compose up - d ```
 
-Depois é só rodar npm run dev e tadan! Aproveite ˆˆ
+Depois é só rodar ```npm run dev``` e tadan! Aproveite ˆˆ
 
 ## Front-end 🚧 EM CONSTRUÇÃO 🚧
 
